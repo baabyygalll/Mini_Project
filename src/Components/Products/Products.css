@@ -8,6 +8,8 @@
 
 .image {
     filter: blur();
+    box-sizing: border-box;
+    margin-left: -0.01rem;
 }
 
 

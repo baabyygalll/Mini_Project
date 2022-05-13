@@ -9,6 +9,8 @@ const NavbarComponent = () => {
       style={{
         backgroundColor: "#9dabdd",
         fontFamily: "Lato, sans-serif",
+        
+     
       }}
       className="navbar"
       variant="dark"

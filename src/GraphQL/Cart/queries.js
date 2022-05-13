@@ -8,6 +8,7 @@ export const INSERT_KERANJANG = gql`
         jumlah
         total_harga
         productId
+        namaProduct
       }
     }
   }
@@ -24,13 +25,25 @@ export const GET_KERANJANG_PRODUCT_ID = gql`
 `;
 
 export const UPDATE_KERANJANG = gql`
-  mutation updateKeranjang($productId: Int!, $jumlah: Int!) {
+  mutation updateKeranjang($productId: Int!, $jumlah: Int!, $total_harga: Int!) {
     update_keranjang(
       where: { productId: { _eq: $productId } }
-      _set: { jumlah: $jumlah }
+      _set: { jumlah: $jumlah },
+      _inc: { total_harga: $total_harga }
     ) {
       affected_rows
     }
   }
 `;
+
+export const GET_KERANJANG = gql`
+subscription getKeranjang {
+  keranjang {
+    productId,
+    jumlah,
+    total_harga,
+    namaProduct,
+  }
+}
+`
  

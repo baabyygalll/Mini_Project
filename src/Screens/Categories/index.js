@@ -33,7 +33,7 @@ function Categories() {
 
   const [category, setCategory] = useState("all");
 
-  const [getKeranjang, {}] = useLazyQuery(GET_KERANJANG_PRODUCT_ID, {
+  const [getKeranjang, { refetch }] = useLazyQuery(GET_KERANJANG_PRODUCT_ID, {
     onCompleted: (data) => {},
     onError: (error) => {
       console.log("Terjadi error di mutasi insert", { error });
@@ -45,7 +45,7 @@ function Categories() {
     {
       onCompleted: (data) => {},
       onError: (error) => {
-        console.log("Terjadi error di mutasi insert", { error });
+        console.log("Terjadi error di mutasi update", { error });
       },
     }
   );
@@ -62,88 +62,90 @@ function Categories() {
 
   const [keranjangs, setKeranjangs] = useState([]);
 
-  const masukKeranjang = async(value) => {
-   
+  const masukKeranjang = async (value) => {
     const response = await getKeranjang({
       variables: {
         productId: value.id,
-        
       },
     });
 
-  
+    if (response.data.keranjang.length === 0) {
+      const keranjang = {
+        jumlah: 1,
+        total_harga: value.harga,
+        productId: value.id,
+        namaProduct: value.nama
+      };
+
+      addKeranjang({
+        variables: {
+          keranjang: {
+            jumlah: keranjang.jumlah,
+            total_harga: keranjang.total_harga,
+            productId: keranjang.productId,
+            namaProduct: keranjang.namaProduct
+          },
+        },
+      });
+
     
-    if(response.data.keranjang.length===0){
+
+      swal({
+        title: "Success!",
+        text: "Your item is already in the cart!",
+        icon: "success",
+        button: "Back",
+        timer: 1500,
+      });
+    } else {
+      
+
+      let product;
+      response.data.keranjang.map((item)=>{
+        if(value.id=== item.productId){
+          return product = item.jumlah
+        }
+      })
+
+     let harga;
+     response.data.keranjang.map((item)=> {
+       if(value.id === item.productId){
+         return harga = item.total_harga
+       }
+     })
+
+    //  console.log(harga)
 
       const keranjang = {
-         jumlah: 1,
-         total_harga: value.harga,
-         productId: value.id,
-       };
+        jumlah: product+1,
+        productId: value.id,
+        total_harga: value.harga,
+        
+      };
 
-       addKeranjang({
-         variables: {
-           keranjang: {
-             jumlah: keranjang.jumlah,
-             total_harga: keranjang.total_harga,
-             productId: keranjang.productId,
-           },
-         },
-       });
+     
 
-       swal({
-         title: "Success!",
-         text: "Your item is already in the cart!",
-         icon: "success",
-         button: "Back",
-         timer: 1500,
-       });
+      console.log(keranjang.total_harga)
 
+      updateKeranjang({
+        variables: {
+          productId: keranjang.productId,
+          jumlah: keranjang.jumlah,
+          total_harga: keranjang.total_harga,
+        },
+      });
+
+
+      swal({
+        title: "Success!",
+        text: "Your item is already in the cart!",
+        icon: "error",
+        button: "Back",
+        timer: 1500,
+      });
+
+       refetch();
     }
-    else{
-
-      // const keranjang = {
-      //   jumlah: value.jumlah+1,
-      //   total_harga: value.harga,
-      //   productId: value.id,
-      // };
-
-      // updateKeranjang({
-      //   variables:{
-      //     keranjang:{
-      //       productId:keranjang.productId,
-      //       jumlah: keranjang.jumlah,
-
-      //     }
-      //   }
-      // })
-
-       swal({
-         title: "Success!",
-         text: "Your item is already in the cart!",
-         icon: "error",
-         button: "Back",
-         timer: 1500,
-       });
-    }
-    // else{
-
-    //     const keranjang = {
-    //       jumlah: getKeranjang.data[1] + 1,
-    //       // total_harga: getKeranjang.data[0].total_harga + value.harga,
-    //       productId: value.id,
-    //      };
-
-    //     updateKeranjang({
-    //       variables: {
-    //         keranjang: {
-    //           productId:keranjang.productId,
-    //           jumlah:keranjang.jumlah,
-
-    //       },}
-    //     });
-
-    // }
   };
 
   return (
