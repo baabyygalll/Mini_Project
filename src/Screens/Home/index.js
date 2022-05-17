@@ -12,7 +12,7 @@ function Home() {
     <div>
       <NavbarComponent />
       <div className="prunella">
-        <h1 style={{ fontSize: "200px" }}>PRUNELLA</h1>
+        <h1 style={{ fontSize: "200px", marginLeft:"-4rem" }}>PRUNELLA</h1>
         <p style={{ fontSize: "50px" }}>Discover What Your Skin Needs</p>
       </div>
       <div className="banner">

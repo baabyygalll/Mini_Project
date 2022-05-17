@@ -43,7 +43,9 @@ function Categories() {
   const [updateKeranjang, { loading: loadingUpdate }] = useMutation(
     UPDATE_KERANJANG,
     {
-      onCompleted: (data) => {},
+      onCompleted: (data) => {
+        refetch();
+      },
       onError: (error) => {
         console.log("Terjadi error di mutasi update", { error });
       },
@@ -53,7 +55,7 @@ function Categories() {
   const [addKeranjang, { loading: loadingInsert }] = useMutation(
     INSERT_KERANJANG,
     {
-      onCompleted: (data) => {},
+      onCompleted: (data) => {refetch()},
       onError: (error) => {
         console.log("Terjadi error di mutasi insert", { error });
       },
@@ -74,7 +76,8 @@ function Categories() {
         jumlah: 1,
         total_harga: value.harga,
         productId: value.id,
-        namaProduct: value.nama
+        namaProduct: value.nama,
+        harga: value.harga,
       };
 
       addKeranjang({
@@ -83,12 +86,11 @@ function Categories() {
             jumlah: keranjang.jumlah,
             total_harga: keranjang.total_harga,
             productId: keranjang.productId,
-            namaProduct: keranjang.namaProduct
+            namaProduct: keranjang.namaProduct,
+            harga: keranjang.harga,
           },
         },
       });
-
-    
 
       swal({
         title: "Success!",
@@ -97,54 +99,36 @@ function Categories() {
         button: "Back",
         timer: 1500,
       });
-    } else {
+
       
-
-      let product;
-      response.data.keranjang.map((item)=>{
-        if(value.id=== item.productId){
-          return product = item.jumlah
+    } else {
+      let product = response.data.keranjang.map((item) => {
+        if (value.id === item.productId) {
+          return {
+            jumlah: item.jumlah + 1,
+            id: item.id,
+            total_harga: value.harga + item.total_harga,
+          };
         }
-      })
+      });
 
-     let harga;
-     response.data.keranjang.map((item)=> {
-       if(value.id === item.productId){
-         return harga = item.total_harga
-       }
-     })
-
-    //  console.log(harga)
-
-      const keranjang = {
-        jumlah: product+1,
-        productId: value.id,
-        total_harga: value.harga,
-        
-      };
-
-     
-
-      console.log(keranjang.total_harga)
+      console.log(product);
 
       updateKeranjang({
         variables: {
-          productId: keranjang.productId,
-          jumlah: keranjang.jumlah,
-          total_harga: keranjang.total_harga,
+          id: product[0].id,
+          jumlah: product[0].jumlah,
+          total_harga: product[0].total_harga,
         },
       });
-
 
       swal({
         title: "Success!",
         text: "Your item is already in the cart!",
-        icon: "error",
+        icon: "success",
         button: "Back",
         timer: 1500,
       });
-
-       refetch();
     }
   };
 
